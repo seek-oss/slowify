@@ -1,6 +1,6 @@
 # 🦥 slowify
 
-Fastify plugins for SEEK-standard tracing, logging and metrics
+Fastify plugins for s̶l̶o̶w̶i̶n̶g̶ ̶d̶o̶w̶n̶ ̶y̶o̶u̶r̶ ̶s̶e̶r̶v̶e̶r̶ SEEK-standard tracing, logging and metrics
 
 [![Powered by skuba](https://img.shields.io/badge/🤿%20skuba-powered-009DC4)](https://github.com/seek-oss/skuba)
 
