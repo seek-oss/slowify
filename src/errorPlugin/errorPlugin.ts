@@ -14,8 +14,8 @@ export class JsonResponse extends Error {
   public name = 'JsonResponse';
   /**
    *
-   * @param statusCode http status code displayed to client
-   * @param additionalFields optional additional fields to display to client
+   * @param statusCode - http status code displayed to client
+   * @param additionalFields - optional additional fields to display to client
    */
   constructor(public statusCode: number, public response: Response) {
     super(response.message);
