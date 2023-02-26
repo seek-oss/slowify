@@ -2,57 +2,53 @@
 
 ## Introduction
 
-Catches errors thrown from downstream middleware, as specified here:
+Catches errors thrown from downstream, as specified here:
 
-<https://github.com/koajs/koa/wiki/Error-Handling#catching-downstream-errors>
-
-This tries to extract a numeric error `status` to serve as the response status,
-and will set the error message as the response body for non-5xx statuses.
-It works well with Koa's built-in `ctx.throw`.
-
-This should be placed high up the middleware chain so that errors from lower middleware are handled.
-It also serves to set the correct `ctx.status` for middleware that emit logs or metrics containing the response status.
+<https://www.fastify.io/docs/latest/Reference/Errors/#catching-uncaught-errors-in-fastify>
 
 ## Usage
 
 ```typescript
-import { ErrorMiddleware, RequestLoggingMiddleware } from 'seek-koala';
+import { ErrorPlugin } from '@seek/slowify';
+import { fastify } from 'fastify';
+import { logger } from 'src/framework/logging';
 
-const requestLoggingMiddleware = RequestLogging.createMiddleware(
-  (ctx, fields, err) => {
-    const data = {
-      ...fields,
-      err: err ?? ErrorMiddleware.thrown(ctx),
-    };
+const errorPlugin = ErrorPlugin.create(logger);
 
-    return ctx.status < 500
-      ? rootLogger.info(data, 'request')
-      : rootLogger.error(data, 'request');
-  },
-);
+export const createApp = async () => {
+  const server = fastify();
+  await server.register(errorPlugin);
 
-app
-  .use(requestLoggingMiddleware)
-  .use(metricsMiddleware)
-  .use(ErrorMiddleware.handle);
+  await server.ready();
+  return server;
+};
 ```
 
 ## JsonResponse
 
-`JsonResponse` is a custom error type used by `handle` to support JSON error response bodies.
-Its constructor takes a `message` string and a `body` JavaScript value.
-If the request accepts JSON then the error response will include the JSON encoded `body`.
+`JsonResponse` is a custom error type used to support JSON error response bodies. The default error handler in Fastify only allows for customisation of the `message` field. This plugin allows for additional fields to be provided to the caller. The constructor takes a `message` and `additionalFields` argument which are exposed to the caller.
 
 ```typescript
-import { ErrorMiddleware } from 'seek-koala';
+import { ErrorPlugin } from '@seek/slowify';
 
-ctx.throw(
-  400,
-  new ErrorMiddleware.JsonResponse('Bad input', {
-    message: 'Bad input',
+fastify.get('/', async (req, reply) => {
+  throw new ErrorPlugin.JsonResponse('Bad input', {
     invalidFields: { '/path/to/field': 'Value out of range' },
-  }),
-);
+  });
+});
 ```
 
-You can also bring your own child Error class by exposing an `isJsonResponse` property set to `true`.
+The caller will then see the following response
+
+```json
+{
+  "message": "Bad Input",
+  "invalidFields": { "/path/to/field": "Value out of range" }
+}
+```
+
+## Handling Unknown Errors
+
+The default Fastify error handler will return a 500 error with the `message` field on any error thrown exposed to the caller. This may unintentionally reveal too much internal information to the caller.
+
+This plugin will instead return a generic 500 error with a JSON `{ "message": "Internal Server Error"}` response to the caller instead for any error which is not a [JsonResponse](#jsonresponse) error. The logger provided to the error plugin is then called with the following call: `logger.error({ err }, 'unknown error')`.

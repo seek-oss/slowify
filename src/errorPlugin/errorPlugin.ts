@@ -1,4 +1,9 @@
+import { FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
+
+interface Logger {
+  error: (...input: any[]) => void;
+}
 
 export class JsonResponse extends Error {
   public name = 'JsonResponse';
@@ -23,12 +28,15 @@ export class JsonResponse extends Error {
   }
 }
 
-export const errorPlugin = fastifyPlugin(async (fastify, _opts) => {
-  fastify.setErrorHandler((err, _req, reply) => {
-    if (err instanceof JsonResponse) {
-      return reply.code(err.statusCode).send(err.response);
-    }
+export const create = (logger: Logger): FastifyPluginAsync =>
+  fastifyPlugin(async (fastify, _opts) => {
+    fastify.setErrorHandler((err, _req, reply) => {
+      if (err instanceof JsonResponse) {
+        return reply.code(err.statusCode).send(err.response);
+      }
 
-    return reply.code(500).send({ message: 'Internal Server Error' });
+      logger.error({ err }, 'unknown error');
+
+      return reply.code(500).send({ message: 'Internal Server Error' });
+    });
   });
-});

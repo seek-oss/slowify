@@ -1,7 +1,13 @@
 import { agentFromPlugins, mockRouteHandler } from '../testing/server';
-import { errorPlugin, JsonResponse } from './errorPlugin';
+import { create, JsonResponse } from './errorPlugin';
 
 describe('errorPlugin', () => {
+  const logger = {
+    error: jest.fn(),
+  };
+
+  const errorPlugin = create(logger);
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -22,5 +28,17 @@ describe('errorPlugin', () => {
 
     const agent = await agentFromPlugins(errorPlugin);
     await agent.get('/').expect(400, { message: 'bad', extra: 'info' });
+  });
+
+  it('sends 500 and logs an error when a `JsonResponse` is not thrown', async () => {
+    const unknownError = new Error('unknown');
+    mockRouteHandler.mockImplementation(async () => {
+      throw unknownError;
+    });
+
+    const agent = await agentFromPlugins(errorPlugin);
+    await agent.get('/').expect(500, { message: 'Internal Server Error' });
+
+    expect(logger.error).toBeCalledWith({ err: unknownError }, 'unknown error');
   });
 });
