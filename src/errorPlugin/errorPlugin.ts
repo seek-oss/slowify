@@ -5,26 +5,20 @@ interface Logger {
   error: (...input: any[]) => void;
 }
 
+interface Response {
+  message: string;
+  [key: string]: unknown;
+}
+
 export class JsonResponse extends Error {
   public name = 'JsonResponse';
   /**
    *
    * @param statusCode http status code displayed to client
-   * @param message `message` field displayed to client
    * @param additionalFields optional additional fields to display to client
    */
-  constructor(
-    public statusCode: number,
-    public message: string,
-    public additionalFields?: Record<string, unknown>,
-  ) {
-    super(message);
-  }
-  get response() {
-    return {
-      message: this.message,
-      ...this.additionalFields,
-    };
+  constructor(public statusCode: number, public response: Response) {
+    super(response.message);
   }
 }
 

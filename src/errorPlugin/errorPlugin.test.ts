@@ -14,7 +14,7 @@ describe('errorPlugin', () => {
 
   it('exposes a thrown 4xx `JsonResponse` as JSON', async () => {
     mockRouteHandler.mockImplementation(async () => {
-      throw new JsonResponse(400, 'bad');
+      throw new JsonResponse(400, { message: 'bad' });
     });
 
     const agent = await agentFromPlugins(errorPlugin);
@@ -23,7 +23,7 @@ describe('errorPlugin', () => {
 
   it('exposes additional fields in `JsonResponse` as JSON', async () => {
     mockRouteHandler.mockImplementation(async () => {
-      throw new JsonResponse(400, 'bad', { extra: 'info' });
+      throw new JsonResponse(400, { message: 'bad', extra: 'info' });
     });
 
     const agent = await agentFromPlugins(errorPlugin);

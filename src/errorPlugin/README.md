@@ -26,21 +26,23 @@ export const createApp = async () => {
 
 ## JsonResponse
 
-`JsonResponse` is a custom error type used to support JSON error response bodies. The default error handler in Fastify only allows for customisation of the `message` field. This plugin allows for additional fields to be provided to the caller. The constructor takes a `message` and `additionalFields` argument which are exposed to the caller.
+`JsonResponse` is a custom error type used to support JSON error response bodies. The default error handler in Fastify only allows for customisation of the `message` field. This plugin allows for additional fields to be provided to the caller. The constructor takes a `statusCode` and `fields` object which contains a mandatory `message` field which are exposed to the caller.
 
 ```typescript
 import { ErrorPlugin } from '@seek/slowify';
 
 fastify.get('/', async (req, reply) => {
-  throw new ErrorPlugin.JsonResponse('Bad input', {
+  throw new ErrorPlugin.JsonResponse(400, {
+    message: 'Bad input',
     invalidFields: { '/path/to/field': 'Value out of range' },
   });
 });
 ```
 
-The caller will then see the following response
+The caller will be shown the following response
 
 ```json
+// 400 - Bad Request
 {
   "message": "Bad Input",
   "invalidFields": { "/path/to/field": "Value out of range" }
