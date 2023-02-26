@@ -36,11 +36,19 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "fastify-plugin": "4.5.0"
+  },
   "devDependencies": {
     "@types/node": "^16.18.3",
+    "@types/supertest": "2.0.12",
     "commitizen": "^4.2.4",
-    "skuba": "5.1.1"
+    "fastify": "4.12.0",
+    "skuba": "5.1.1",
+    "supertest": "6.3.3"
+  },
+  "peerDependencies": {
+    "fastify": "4"
   },
   "skuba": {
     "entryPoint": "src/index.ts",
