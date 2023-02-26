@@ -50,6 +50,6 @@ The caller will be shown the following 400 response
 
 ## Handling Unknown Errors
 
-The default Fastify error handler will return a 500 error with the `message` field on any error thrown exposed to the caller. This may unintentionally reveal too much internal information to the caller.
+The default [Fastify error handler](https://www.fastify.io/docs/latest/Reference/Reply/#errors) will return a 500 error with the `message` field on any error thrown exposed to the caller. This may unintentionally reveal too much internal information to the caller.
 
 This plugin will instead return a generic 500 error with a JSON `{ "message": "Internal Server Error"}` response to the caller instead for any error which is not a [JsonResponse](#jsonresponse) error. The logger provided to the error plugin is then called with the following call: `logger.error({ err }, 'unknown error')`.
