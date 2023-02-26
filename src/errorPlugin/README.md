@@ -39,10 +39,9 @@ fastify.get('/', async (req, reply) => {
 });
 ```
 
-The caller will be shown the following response
+The caller will be shown the following 400 response
 
 ```json
-// 400 - Bad Request
 {
   "message": "Bad Input",
   "invalidFields": { "/path/to/field": "Value out of range" }
