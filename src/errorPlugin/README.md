@@ -46,8 +46,12 @@ The caller will be shown the following 400 response
 }
 ```
 
+You can also bring your own child Error class by exposing an isJsonResponse property set to true.
+
 ## Handling Unknown Errors
 
 The default [Fastify error handler](https://www.fastify.io/docs/latest/Reference/Reply/#errors) will return a 500 error with the `message` field on any error thrown, to the caller. This may unintentionally reveal too much internal information to the caller.
 
 This plugin will instead return a generic 500 error response to the caller instead for any error which does not contain a `statusCode` or `status` field. The logger provided to the error plugin is then called with the following call: `logger.error({ err }, 'unknown error')`.
+
+This error plugin stores the error thrown in the Fastify request object under the exported const symbol `ERROR_STATE_KEY` if you wish to access it yourself.
