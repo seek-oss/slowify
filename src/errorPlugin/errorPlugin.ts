@@ -67,7 +67,6 @@ export const plugin: FastifyPluginAsync = fastifyPlugin(
       if (
         expose &&
         err.isJsonResponse === true &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         req.accepts().type(['json'])
       ) {
         return reply.code(statusCode).send(err.body);
