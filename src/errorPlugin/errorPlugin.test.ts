@@ -1,13 +1,16 @@
-import { agentFromPlugins, mockRouteHandler } from '../testing/server';
+import fastify, { type FastifyBaseLogger } from 'fastify';
 
-import { JsonResponse, create } from './errorPlugin';
+import {
+  agentFromApp,
+  agentFromPlugins,
+  mockRouteHandler,
+  router,
+} from '../testing/server';
+
+import { JsonResponse, plugin } from './errorPlugin';
 
 describe('errorPlugin', () => {
-  const logger = {
-    error: jest.fn(),
-  };
-
-  const errorPlugin = create(logger);
+  const errorPlugin = plugin;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -15,32 +18,55 @@ describe('errorPlugin', () => {
 
   it('exposes a thrown 4xx `JsonResponse` as JSON', async () => {
     mockRouteHandler.mockImplementation(async () => {
-      throw new JsonResponse(400, { message: 'bad' });
+      throw new JsonResponse(400, 'bad', { message: 'bad' });
     });
 
     const agent = await agentFromPlugins(errorPlugin);
     await agent.get('/').expect(400, { message: 'bad' });
   });
 
-  it('exposes additional fields in `JsonResponse` as JSON', async () => {
+  it('exposes an error like object with a statusCode', async () => {
+    mockRouteHandler.mockImplementation(async () =>
+      Promise.reject({ statusCode: 400, message: 'bad' }),
+    );
+
+    const agent = await agentFromPlugins(errorPlugin);
+    await agent.get('/').expect(400, 'bad');
+  });
+
+  it('redacts a thrown 5xx error', async () => {
     mockRouteHandler.mockImplementation(async () => {
-      throw new JsonResponse(400, { message: 'bad', extra: 'info' });
+      throw new JsonResponse(502, 'bad', { message: 'bad' });
     });
 
     const agent = await agentFromPlugins(errorPlugin);
-    await agent.get('/').expect(400, { message: 'bad', extra: 'info' });
+    await agent.get('/').expect(502, '');
   });
 
-  it('sends 500 and logs an error when a `JsonResponse` is not thrown', async () => {
-    const unknownError = new Error('unknown');
+  it('redacts a non http error and logs the unknown error', async () => {
+    const unknownError = new Error('bad');
     mockRouteHandler.mockImplementation(async () => {
       throw unknownError;
     });
+    const mockLogger = {
+      info: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+      fatal: jest.fn(),
+      warn: jest.fn(),
+      trace: jest.fn(),
+      child: jest.fn(() => mockLogger),
+    } as Partial<FastifyBaseLogger> as FastifyBaseLogger;
 
-    const agent = await agentFromPlugins(errorPlugin);
-    await agent.get('/').expect(500, { message: 'Internal Server Error' });
+    const app = fastify({
+      logger: mockLogger,
+    });
+    await app.register(errorPlugin);
+    await app.register(router);
+    await app.ready();
 
-    expect(logger.error).toHaveBeenCalledWith(
+    await agentFromApp(app).get('/').expect(500, '');
+    expect(mockLogger.error).toHaveBeenCalledWith(
       { err: unknownError },
       'unknown error',
     );

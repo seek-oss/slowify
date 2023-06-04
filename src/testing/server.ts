@@ -1,8 +1,8 @@
 import {
-  FastifyInstance,
-  FastifyPluginAsync,
-  FastifyPluginCallback,
-  RouteHandler,
+  type FastifyInstance,
+  type FastifyPluginAsync,
+  type FastifyPluginCallback,
+  type RouteHandler,
   fastify,
 } from 'fastify';
 import request from 'supertest';
@@ -20,7 +20,7 @@ export const mockRouteHandler = jest.fn<
   Parameters<RouteHandler>
 >();
 
-const router: FastifyPluginAsync = async (app, _opts) => {
+export const router: FastifyPluginAsync = async (app, _opts) => {
   app.get('/', mockRouteHandler);
 };
 

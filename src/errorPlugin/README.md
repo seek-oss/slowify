@@ -13,11 +13,9 @@ import { ErrorPlugin } from '@seek/slowify';
 import { fastify } from 'fastify';
 import { logger } from 'src/framework/logging';
 
-const errorPlugin = ErrorPlugin.create(logger);
-
 export const createApp = async () => {
   const server = fastify();
-  await server.register(errorPlugin);
+  await server.register(ErrorPlugin.plugin);
 
   await server.ready();
   return server;
