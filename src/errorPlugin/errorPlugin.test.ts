@@ -43,6 +43,24 @@ describe('errorPlugin', () => {
     await agent.get('/').expect(502, '');
   });
 
+  it('returns a JSON payload when by default', async () => {
+    mockRouteHandler.mockImplementation(async () => {
+      throw new JsonResponse(400, 'bad', { message: 'bad' });
+    });
+
+    const agent = await agentFromPlugins(errorPlugin);
+    await agent.get('/').expect(400, { message: 'bad' });
+  });
+
+  it('returns a plain text payload when accept is text/plain', async () => {
+    mockRouteHandler.mockImplementation(async () => {
+      throw new JsonResponse(400, 'bad', { message: 'bad' });
+    });
+
+    const agent = await agentFromPlugins(errorPlugin);
+    await agent.get('/').set('accept', 'plain/text').expect(400, 'bad');
+  });
+
   it('redacts a non http error and logs the unknown error', async () => {
     const unknownError = new Error('bad');
     mockRouteHandler.mockImplementation(async () => {
