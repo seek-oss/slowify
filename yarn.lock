@@ -737,10 +737,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fastify/accepts@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@fastify/accepts/-/accepts-4.1.0.tgz#8eac711e9c9b4455156bcfda5f78804220453504"
-  integrity sha512-oURKietAW2iXxtQCS8oaTSMHaJ0PQ7M+NymOr8RgX65fOi+xGWsZ9Fu6hep/9oyeOUD0PA07Ofg03g9f+GvHLg==
+"@fastify/accepts@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@fastify/accepts/-/accepts-4.2.0.tgz#5352813d12dce244b5a89af9bc6b4e4f8e410c21"
+  integrity sha512-nM2OsxJvdBZOcpMqtbolW7RMB2bn/L1PDZ03+zVlC+/JVdBEW+ufWEKmtsMVzelU5TwyTc/+X/CRr/98JfE9mQ==
   dependencies:
     accepts "^1.3.5"
     fastify-plugin "^4.0.0"
@@ -1624,13 +1624,6 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
-
-"@types/accepts@^1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@types/accepts/-/accepts-1.3.5.tgz#c34bec115cfc746e04fe5a059df4ce7e7b391575"
-  integrity sha512-jOdnI/3qTpHABjM5cx1Hc0sKsPoYCp+DP/GJRGtDlPd7fiV9oXGGIcjW/ZOxLIvjGz8MA+uMZI9metHlgqbgwQ==
-  dependencies:
-    "@types/node" "*"
 
 "@types/babel__core@^7.1.14":
   version "7.20.0"
